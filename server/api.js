@@ -29,8 +29,8 @@ async function findProductById(productId) {
   const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
   const db = client.db(MONGODB_DB_NAME);
   const collection = db.collection('products');
-  let result = await collection.find({ _id: ObjectId(productId) }).toArray();
-  return result;
+  let found = await collection.find({ _id: ObjectId(productId) }).toArray();
+  return found;
 }
 
 app.get('/products/search', async (req, res) => {
@@ -50,9 +50,9 @@ app.get('/products/search', async (req, res) => {
     filter.price = { $lte: parseInt(price) };
   }
 
-  const result = await collection.find(filter).sort({price: 1}).limit(limit).toArray();
+  const found = await collection.find(filter).sort({price: 1}).limit(limit).toArray();
   
-  res.json(result);
+  res.send({result: found});
 });
 
 app.get('/brands', async (req, res) => {

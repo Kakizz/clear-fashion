@@ -69,7 +69,7 @@ const fetchProducts = async (page = 1, size = 12) => {
         body.result[i].price = 0
       }
     }
-    
+
 /*
     if (body.success !== true) {
       console.error(body);
@@ -218,8 +218,9 @@ const render = (products, pagination) => {
   renderIndicators(pagination);
 };
 
-function PriceAsc(a, b) {
-  return parseFloat(a.price) - parseFloat(b.price);
+function PriceAsc(data) {
+  data.sort((a, b) => a.price - b.price);
+  return data
 }
 
 function PriceDesc(a, b) {
@@ -528,8 +529,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   selectBrand.innerHTML = brands;
   
   const products = await fetchProducts();
-
-  console.log("products", products);
 
   products = products.sort(PriceAsc);
 

@@ -89,7 +89,9 @@ const fetchBrands = async () => {
       return {currentProducts, currentPagination};
     }
 
-    return body.data;
+    console.log("yo le gang", body.result)
+
+    return body.result;
   } catch (error) {
     console.error(error);
     return {currentProducts, currentPagination};
@@ -509,7 +511,6 @@ const quantile = (arr, q) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   const brand_names = await fetchBrands();
-  console.log("brand_names", brand_names)
   spanNbBrands.innerHTML = brand_names.result.length;
   
   brand_names.result.unshift("No");

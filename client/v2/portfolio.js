@@ -65,7 +65,6 @@ const fetchProducts = async (page = 1, size = 12) => {
     );
     const body = await response.json();
 
-    console.log("fetched product", body.result)
 /*
     if (body.success !== true) {
       console.error(body);
@@ -524,6 +523,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   selectBrand.innerHTML = brands;
   
   const products = await fetchProducts();
+
+  console.log("products", products);
+
   products = products.sort(PriceAsc);
 
   setCurrentProducts(products);

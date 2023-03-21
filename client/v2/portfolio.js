@@ -61,10 +61,15 @@ const fetchProducts = async (page = 1, size = 12) => {
     const response = await fetch(
       `https://clear-fashion-delta-vert.vercel.app/products/search`
       //`https://clear-fashion-delta-vert.vercel.app?page=${page}&size=${size}`
-      //`https://clear-fashion-api.vercel.app`
     );
     const body = await response.json();
 
+    for(let i = 0; i < body.result.length; i++) {
+      if (body.result[i].price == null) {
+        body.result[i].price = 0
+      }
+    }
+    
 /*
     if (body.success !== true) {
       console.error(body);

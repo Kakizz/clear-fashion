@@ -64,7 +64,7 @@ const fetchProducts = async (page = 1, size = 12) => {
       //`https://clear-fashion-api.vercel.app`
     );
     const body = await response.json();
-    console.log(body)
+    console.log("yo le gang", body)
     if (body.success !== true) {
       console.error(body);
       return {currentProducts, currentPagination};

@@ -65,12 +65,14 @@ const fetchProducts = async (page = 1, size = 12) => {
     );
     const body = await response.json();
 
+    console.log("fetched product", body.result)
+/*
     if (body.success !== true) {
       console.error(body);
       return {currentProducts, currentPagination};
     }
-
-    return body.data;
+*/
+    return body.result;
   } catch (error) {
     console.error(error);
     return {currentProducts, currentPagination};
@@ -83,13 +85,13 @@ const fetchBrands = async () => {
       `https://clear-fashion-delta-vert.vercel.app/brands`
     );
     const body = await response.json();
-
+ /*
     if (body.success !== true) {
       console.error(body);
+      console.log("erreur 1")
       return {currentProducts, currentPagination};
     }
-
-    console.log("yo le gang", body.result)
+*/
 
     return body.result;
   } catch (error) {
@@ -511,18 +513,18 @@ const quantile = (arr, q) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   const brand_names = await fetchBrands();
-  spanNbBrands.innerHTML = brand_names.result.length;
+  spanNbBrands.innerHTML = brand_names.length;
   
-  brand_names.result.unshift("No");
+  brand_names.unshift("No");
   const brands = Array.from(
-    brand_names.result,
+    brand_names,
     value => `<option value="${value}">${value}</option>`
   ).join('');
   
   selectBrand.innerHTML = brands;
   
   const products = await fetchProducts();
-  products.result = products.result.sort(PriceAsc);
+  products = products.sort(PriceAsc);
 
   setCurrentProducts(products);
   render(currentProducts, currentPagination);

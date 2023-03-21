@@ -6,6 +6,8 @@ async function insertProducts() {
     const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
     const db =  client.db(MONGODB_DB_NAME);
 
+    //await db.collection('products').deleteMany({});
+
     const products = require('./products.json');
     
     const collection = db.collection('products');
@@ -20,7 +22,10 @@ async function insertProducts() {
             console.log(`Skipped product with URL: ${product.url}`);
         }
     }
-
+    
+    //const result = await collection.insertMany(products);
+    //console.log(result);
+    
     await client.close();
 }
 

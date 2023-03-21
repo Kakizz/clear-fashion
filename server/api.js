@@ -55,14 +55,14 @@ app.get('/products/search', async (req, res) => {
   res.json(result);
 });
 
-app.get('/brand', async (req, res) => {
+app.get('/brands', async (req, res) => {
   const client = await MongoClient.connect(MONGODB_URI, {'useNewUrlParser': true});
   const db = client.db(MONGODB_DB_NAME);
   const collection = db.collection('products');
 
   const result = await collection.distinct('brand');
   
-  res.json(result);
+  res.send({result: result});
 });
 
 app.get('/products/:id', async (req, res) => {

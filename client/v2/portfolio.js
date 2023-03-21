@@ -83,9 +83,7 @@ const fetchBrands = async () => {
       `https://clear-fashion-delta-vert.vercel.app/brands`
     );
     const body = await response.json();
-
-    console.log("yo le gang", body);
-
+    
     if (body.success !== true) {
       console.error(body);
       return {currentProducts, currentPagination};
@@ -511,6 +509,7 @@ const quantile = (arr, q) => {
 
 document.addEventListener('DOMContentLoaded', async () => {
   const brand_names = await fetchBrands();
+  console.log("test", brand_names)
   spanNbBrands.innerHTML = brand_names.result.length;
   
   brand_names.result.unshift("No");

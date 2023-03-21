@@ -3,12 +3,12 @@
 
 /*
 Description of the available api
-GET https://clear-fashion-api-k.vercel.app/
+GET https://clear-fashion-delta-vert.vercel.app/
 Search for specific products
 This endpoint accepts the following optional query string parameters:
 - `page` - page of products to return
 - `size` - number of products to return
-GET https://clear-fashion-api-k.vercel.app/brands
+GET https://clear-fashion-delta-vert.vercel.app/brands
 Search for available brands list
 */
 
@@ -59,10 +59,12 @@ const setCurrentProducts = ({result, meta}) => {
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
-      `https://clear-fashion-api-k.vercel.app?page=${page}&size=${size}`
+      `https://clear-fashion-delta-vert.vercel.app/products/search`
+      //`https://clear-fashion-delta-vert.vercel.app?page=${page}&size=${size}`
+      //`https://clear-fashion-api.vercel.app`
     );
     const body = await response.json();
-
+    console.log(body)
     if (body.success !== true) {
       console.error(body);
       return {currentProducts, currentPagination};
@@ -78,7 +80,7 @@ const fetchProducts = async (page = 1, size = 12) => {
 const fetchBrands = async () => {
   try {
     const response = await fetch(
-      `https://clear-fashion-api-k.vercel.app/brands`
+      `https://clear-fashion-delta-vert.vercel.app/brand`
     );
     const body = await response.json();
 
@@ -94,12 +96,12 @@ const fetchBrands = async () => {
   }
 };
 
-function changeFavorite(uuid) {
-  if (favorite_products.includes(uuid)) {
-    favorite_products = favorite_products.filter(item => !(item == uuid));
+function changeFavorite(_id) {
+  if (favorite_products.includes(_id)) {
+    favorite_products = favorite_products.filter(item => !(item == _id));
   }
   else {
-    favorite_products.push(uuid);
+    favorite_products.push(_id);
   }
 
   const products = [];
@@ -115,7 +117,7 @@ function changeFavorite(uuid) {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (sort == "price-asc") {
@@ -132,16 +134,16 @@ function changeFavorite(uuid) {
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
 }
 
-function textFavorite(uuid) {
+function textFavorite(_id) {
   let text = "";
-  if (favorite_products.includes(uuid)) {
+  if (favorite_products.includes(_id)) {
     text = "Remove favorite";
   }
   else {
@@ -160,12 +162,12 @@ const renderProducts = products => {
   const template = products
     .map(product => {
       return `
-      <div class="product" id=${product.uuid}>
+      <div class="product" id=${product._id}>
         <span>${product.brand}</span>
         <a href="${product.link}" target="_blank">${product.name}</a>
         <span>${product.price}€</span>
-        <span>${new Date(product.released).toDateString()}</span>
-        <button onclick="changeFavorite('${product.uuid}')">${textFavorite(product.uuid)}</button>
+        <span>${new Date(product.date).toDateString()}</span>
+        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
       </div>
     `;
     })
@@ -217,11 +219,11 @@ function PriceDesc(a, b) {
 }
 
 function DateAsc(a, b) {
-  return new Date(b.released) - new Date(a.released);
+  return new Date(b.date) - new Date(a.date);
 }
 
 function DateDesc(a, b) {
-  return new Date(a.released) - new Date(b.released);
+  return new Date(a.date) - new Date(b.date);
 }
 
 /**
@@ -243,7 +245,7 @@ selectShow.addEventListener('change', async (event) => {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (sort == "price-asc") {
@@ -260,7 +262,7 @@ selectShow.addEventListener('change', async (event) => {
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   setCurrentProducts(products);
@@ -279,7 +281,7 @@ selectPage.addEventListener('change', async (event) => {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (sort == "price-asc") {
@@ -296,7 +298,7 @@ selectPage.addEventListener('change', async (event) => {
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   setCurrentProducts(products);
@@ -315,7 +317,7 @@ selectBrand.addEventListener('change', async (event) => {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (sort == "price-asc") {
@@ -332,7 +334,7 @@ selectBrand.addEventListener('change', async (event) => {
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   brand = event.target.value;
@@ -349,7 +351,7 @@ selectReasonable.addEventListener('change', async (event) => {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (brand != "No") {
@@ -370,7 +372,7 @@ selectReasonable.addEventListener('change', async (event) => {
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   reasonable = event.target.value;
@@ -383,7 +385,7 @@ selectRecent.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
   
   if (event.target.value == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (brand != "No") {
@@ -408,7 +410,7 @@ selectRecent.addEventListener('change', async (event) => {
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   recent = event.target.value;
@@ -442,11 +444,11 @@ selectSort.addEventListener('change', async (event) => {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (favorite == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   sort = event.target.value;
@@ -459,7 +461,7 @@ selectFavorite.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
   if (event.target.value == "Yes") {
-    products.result = products.result.filter(product => favorite_products.includes(product.uuid));
+    products.result = products.result.filter(product => favorite_products.includes(product._id));
   }
 
   if (brand != "No") {
@@ -471,7 +473,7 @@ selectFavorite.addEventListener('change', async (event) => {
   }
 
   if (recent == "Yes") {
-    products.result = products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100);
+    products.result = products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100);
   }
 
   if (sort == "price-asc") {
@@ -524,14 +526,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   render(currentProducts, currentPagination);
 
   const all_products = await fetchProducts(1, currentPagination.count);
-  spanNbRecentProducts.innerHTML = all_products.result.filter(product => (current_date - new Date(product.released)) / (1000 * 60 * 60 * 24) <= 100).length;
+  spanNbRecentProducts.innerHTML = all_products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100).length;
   
   let prices = [];
-  let lastReleasedDate = new Date(all_products.result[0].released);
+  let lastReleasedDate = new Date(all_products.result[0].date);
   for (let product_id in all_products.result) {
     prices.push(all_products.result[product_id].price);
-    if (new Date(all_products.result[product_id].released) > new Date(lastReleasedDate)) {
-      lastReleasedDate = new Date(all_products.result[product_id].released);
+    if (new Date(all_products.result[product_id].date) > new Date(lastReleasedDate)) {
+      lastReleasedDate = new Date(all_products.result[product_id].date);
     }
   }
   spanPercentile50.innerHTML = Math.round(quantile(prices, 0.50));

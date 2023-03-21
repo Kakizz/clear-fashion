@@ -10,26 +10,29 @@ const parse = data => {
   const $ = cheerio.load(data);
   const today = new Date().toLocaleDateString('en-US');
 
-  return $('.productList-container .productList')
+  return $('.product-grid-container .grid__item')
     .map((i, element) => {
-      const name = $(element)
-        .find('.productList-title')
+      let name = $(element)
+        .find('.full-unstyled-link')
         .text()
         .trim()
         .replace(/\s/g, ' ');
+        name = name.substr(0, name.length/2).trim();
       const price = parseInt(
         $(element)
-          .find('.productList-price')
+          .find('.price__regular .money')
           .text()
+          .slice(1)
       );
-      const brand = 'Dedicated';
+      const brand = 'Circle Sportswear';
       let url = $(element)
-        .find('.productList-link')
+        .find('.full-unstyled-link')
         .attr('href');
-        url = 'https://www.dedicatedbrand.com'.concat(url);
-      const photo = $(element)
+        url = 'https://shop.circlesportswear.com'.concat(url);
+      let photo = $(element)
         .find('img')
-        .attr('data-src');
+        .attr('src');
+      photo = 'https:'.concat(photo);
 
       return {name, price, brand, url, photo, date:today};
     })

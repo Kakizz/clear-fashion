@@ -80,7 +80,7 @@ const fetchProducts = async (page = 1, size = 12) => {
 const fetchBrands = async () => {
   try {
     const response = await fetch(
-      `https://clear-fashion-delta-vert.vercel.app/brand`
+      `https://clear-fashion-delta-vert.vercel.app/brands`
     );
     const body = await response.json();
 

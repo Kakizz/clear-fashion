@@ -129,7 +129,7 @@ function changeFavorite(_id) {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -167,6 +167,7 @@ function textFavorite(_id) {
 const renderProducts = products => {
   const fragment = document.createDocumentFragment();
   const div = document.createElement('div');
+
   const template = products
     .map(product => {
       return `
@@ -221,7 +222,7 @@ const render = (products, pagination) => {
 function PriceAsc(data) {
   data.sort((a, b) => a.price - b.price);
   return data
-}
+} 
 
 function PriceDesc(a, b) {
   return parseFloat(b.price) - parseFloat(a.price);
@@ -258,7 +259,7 @@ selectShow.addEventListener('change', async (event) => {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -294,7 +295,7 @@ selectPage.addEventListener('change', async (event) => {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -330,7 +331,7 @@ selectBrand.addEventListener('change', async (event) => {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -368,7 +369,7 @@ selectReasonable.addEventListener('change', async (event) => {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -406,7 +407,7 @@ selectRecent.addEventListener('change', async (event) => {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -432,7 +433,7 @@ selectSort.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
   
   if (event.target.value == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (event.target.value == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -486,7 +487,7 @@ selectFavorite.addEventListener('change', async (event) => {
   }
 
   if (sort == "price-asc") {
-    products.result = products.result.sort(PriceAsc);
+    products.result = PriceAsc(products);
   }
   else if (sort == "price-desc") {
     products.result = products.result.sort(PriceDesc);
@@ -528,9 +529,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   selectBrand.innerHTML = brands;
   
-  const products = await fetchProducts();
+  var products = await fetchProducts();
 
-  products = products.sort(PriceAsc);
+  products = PriceAsc(products);
 
   setCurrentProducts(products);
   render(currentProducts, currentPagination);

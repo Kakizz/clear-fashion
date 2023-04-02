@@ -1,7 +1,7 @@
 // Invoking strict mode https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
 'use strict';
 
-// current products on the page
+
 let currentProducts = [];
 let show = 12;
 let page = 1;
@@ -12,7 +12,7 @@ let sort = 'Cheapest';
 let favorite_products = [];
 const current_date = Date.now();
 
-// instantiate the selectors
+// Selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
@@ -31,12 +31,9 @@ const sectionSearchProducts = document.querySelector('#searchProducts');
 const spanNbFavoriteProducts = document.querySelector('#nbFavoriteProducts');
 const sectionFavoriteProducts = document.querySelector('#favoriteProducts');
 
-/**
- * Fetch API
- */
 
-//`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-//`https://clear-fashion-delta-vert.vercel.app/products/search`
+// Fetch API
+
 
 const fetchProducts = async (show, page, brand, price, days, sort) => {
   try {
@@ -101,9 +98,9 @@ const fetchBrands = async () => {
   }
 };
 
-/**
- * Favorite products
- */
+
+// Favorite
+
 
 async function changeFavorite(id) {
   if (favorite_products.find(element => element._id === id)) {
@@ -127,9 +124,9 @@ function textFavorite(id) {
   return text;
 }
 
-/**
- * Render list of products
- */
+
+// Render
+
 
 const renderSearchProducts = products => {
   currentProducts = products;
@@ -171,9 +168,9 @@ const renderFavoriteProducts = products => {
   sectionFavoriteProducts.innerHTML = template;
 };
 
-/**
- * Declaration of all Listeners
- */
+
+// Listeners
+
 
 selectShow.addEventListener('change', async (event) => {
   show = event.target.value;
@@ -216,9 +213,9 @@ selectSort.addEventListener('change', async (event) => {
   renderSearchProducts(products);
 });
 
-/**
- * Launched on page load
- */
+
+// Main
+
 
 const quantile = (arr, q) => {
   const sorted = arr.sort((a, b) => a - b);

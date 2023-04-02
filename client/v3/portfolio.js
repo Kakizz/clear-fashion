@@ -136,9 +136,9 @@ const renderSearchProducts = products => {
       return `
       <div class="product" id=${product._id}>
         <img class="productPhoto" src="${product.photo}">
-        <span>       ${product.brand}</span>
+        <span>${product.brand}</span>
         <a href="${product.url}" target="_blank">${product.name}</a>
-        <span>${product.price}€</span>
+        <span>${product.price} €</span>
         <span>${new Date(product.date).toLocaleDateString()}</span>
         <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
       </div>

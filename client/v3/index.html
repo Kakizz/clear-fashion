@@ -33,7 +33,7 @@
         </div>
         <div id="filters">
           <div id="brand">
-            <label for="brand-select">By brand:</label>
+            <label for="brand-select">Sort by brand:</label>
             <select name="brand" id="brand-select"> </select>
           </div>
           <div id="price">
@@ -46,7 +46,7 @@
             </select>
           </div>
           <div id="days">
-            <label for="days-select">Maximum days ago:</label>
+            <label for="days-select">Maximum days since release:</label>
             <select name="days" id="days-select">
               <option value="No">No</option>
               <option value="7">7</option>
@@ -56,7 +56,7 @@
           </div>
         </div>
         <div id="sort">
-          <label for="sort-select">Sort by:</label>
+          <label for="sort-select">Sort options:</label>
           <select name="sort" id="sort-select">
             <option value="Asc price">Asc price</option>
             <option value="Desc price">Desc price</option>
@@ -66,33 +66,33 @@
         </div>
       </section>
       <section class="grid-child" id="indicators">
-        <h2>Indicators</h2>
-        <div>
-          <span>Number of products:</span>
-          <span id="nbProducts"></span>
-        </div>
+        <h2>Informations</h2>
         <div>
           <span>Number of brands:</span>
           <span id="nbBrands"></span>
+        </div>
+        <div>
+          <span>Number of products:</span>
+          <span id="nbProducts"></span>
         </div>
         <div>
           <span>Number of new products (15 days):</span>
           <span id="nbRecentProducts"></span>
         </div>
         <div>
-          <span>median price value:</span>
+          <span>Price median:</span>
           <span id="percentile50"></span>
         </div>
         <div>
-          <span>p90 price value:</span>
+          <span>Price 90 percentile:</span>
           <span id="percentile90"></span>
         </div>
         <div>
-          <span>p95 price value:</span>
+          <span>Price 95 percentile:</span>
           <span id="percentile95"></span>
         </div>
         <div>
-          <span>Last released date:</span>
+          <span>Date of last release:</span>
           <span id="lastReleasedDate"></span>
         </div>
       </section>

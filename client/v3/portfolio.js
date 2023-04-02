@@ -53,9 +53,11 @@ const fetchProducts = async (show, page, brand, price, days, sort) => {
     if (sort) {
       url += `&sort=${sort}`;
     }
-    
+
     const response = await fetch(url);
     const body = await response.json();
+
+    console.log("ylg", body)
 
     const currentPage = body.currentPage;
     const totalPages = body.totalPages;

@@ -26,7 +26,7 @@ app.listen(PORT);
 console.log(`📡 Running on port ${PORT}`);
 
 app.get('/products/search', async (req, res) => {
-  const show = parseInt(req.query.show) || 12;
+  const show = parseInt(req.query.show) || 10;
   const page = parseInt(req.query.page) || 1;
   const brand = req.query.brand;
   const price = req.query.price;

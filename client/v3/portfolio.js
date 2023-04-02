@@ -3,7 +3,7 @@
 
 
 let currentProducts = [];
-let show = 12;
+let show = 10;
 let page = 1;
 let brand = 'No';
 let price = 'No';

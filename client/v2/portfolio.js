@@ -46,6 +46,8 @@ const sectionProducts = document.querySelector('#products');
  * @param {Object} meta - pagination meta info
  */
 const setCurrentProducts = ({result, meta}) => {
+  console.log("aaa", result)
+  console.log("bbb", meta)
   currentProducts = result;
   currentPagination = meta;
 };
@@ -59,10 +61,13 @@ const setCurrentProducts = ({result, meta}) => {
 const fetchProducts = async (page = 1, size = 12) => {
   try {
     const response = await fetch(
-      `https://clear-fashion-delta-vert.vercel.app/products/search`
-      //`https://clear-fashion-delta-vert.vercel.app?page=${page}&size=${size}`
+      `https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+      //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+      //`https://clear-fashion-delta-vert.vercel.app/products/search`
     );
     const body = await response.json();
+
+    console.log("ylg", body)
 
     for(let i = 0; i < body.result.length; i++) {
       if (body.result[i].price == null) {
@@ -70,12 +75,6 @@ const fetchProducts = async (page = 1, size = 12) => {
       }
     }
 
-/*
-    if (body.success !== true) {
-      console.error(body);
-      return {currentProducts, currentPagination};
-    }
-*/
     return body.result;
   } catch (error) {
     console.error(error);
@@ -89,13 +88,6 @@ const fetchBrands = async () => {
       `https://clear-fashion-delta-vert.vercel.app/brands`
     );
     const body = await response.json();
- /*
-    if (body.success !== true) {
-      console.error(body);
-      console.log("erreur 1")
-      return {currentProducts, currentPagination};
-    }
-*/
 
     return body.result;
   } catch (error) {
@@ -318,6 +310,9 @@ selectPage.addEventListener('change', async (event) => {
 selectBrand.addEventListener('change', async (event) => {
   const products = await fetchProducts(currentPagination.currentPage, currentPagination.pageSize);
 
+  console.log("ylg", products)
+
+
   if (event.target.value != "No") {
     products.result = products.result.filter(product => product.brand == event.target.value);
   }
@@ -533,8 +528,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   products = PriceAsc(products);
 
+
+  console.log("ylg", products)
+
+
   setCurrentProducts(products);
   render(currentProducts, currentPagination);
+
+
 
   const all_products = await fetchProducts(1, currentPagination.count);
   spanNbRecentProducts.innerHTML = all_products.result.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 100).length;

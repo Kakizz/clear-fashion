@@ -126,7 +126,7 @@ function favoriteText(id) {
   presentProducts = products;
   const template = products
   .map(product => {
-  return '<div class="product" id=${product._id}> <img class="productPhoto" src="${product.photo}"> <span>${product.brand}</span> <a href="${product.url}" target="_blank">${product.name}</a> <span>${product.price}€</span> <span>${new Date(product.date).toLocaleDateString()}</span> <button onclick="modifyFavorite('${product._id}')">${favoriteText(product._id)}</button> </div> ';
+  return `<div class="product" id=${product._id}> <img class="productPhoto" src="${product.photo}"> <span>${product.brand}</span> <a href="${product.url}" target="_blank">${product.name}</a> <span>${product.price}€</span> <span>${new Date(product.date).toLocaleDateString()}</span> <button onclick="modifyFavorite('${product._id}')">${favoriteText(product._id)}</button> </div> `;
   })
   .join('');
   
@@ -136,7 +136,7 @@ function favoriteText(id) {
   const displayFavoriteProducts = products => {
   const template = favoriteItems
   .map(product => {
-  return '<div class="product" id=${product._id}> <img class="productPhoto" src="${product.photo}"> <span>${product.brand}</span> <a href="${product.url}" target="_blank">${product.name}</a> <span>${product.price}€</span> <span>${new Date(product.date).toLocaleDateString()}</span> <button onclick="modifyFavorite('${product._id}')">${favoriteText(product._id)}</button> </div> '';
+  return `<div class="product" id=${product._id}> <img class="productPhoto" src="${product.photo}"> <span>${product.brand}</span> <a href="${product.url}" target="_blank">${product.name}</a> <span>${product.price}€</span> <span>${new Date(product.date).toLocaleDateString()}</span> <button onclick="modifyFavorite('${product._id}')">${favoriteText(product._id)}</button> </div> `;
   })
   .join('');
   

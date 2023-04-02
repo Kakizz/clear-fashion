@@ -12,7 +12,10 @@ let sort = 'Cheapest';
 let favorite_products = [];
 const current_date = Date.now();
 
+
 // Selectors
+
+
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
@@ -53,8 +56,6 @@ const fetchProducts = async (show, page, brand, price, days, sort) => {
 
     const response = await fetch(url);
     const body = await response.json();
-
-    console.log("ylg", body)
 
     const currentPage = body.currentPage;
     const totalPages = body.totalPages;

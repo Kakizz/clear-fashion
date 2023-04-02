@@ -117,10 +117,10 @@ async function changeFavorite(id) {
 function textFavorite(id) {
   let text = "";
   if (favorite_products.find(element => element._id === id)) {
-    text = "Remove favorite";
+    text = "Remove of favorite";
   }
   else {
-    text = "Add favorite";
+    text = "Add to favorite";
   }
   return text;
 }

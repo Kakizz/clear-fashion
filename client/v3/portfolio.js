@@ -1,56 +1,51 @@
-// Invoking strict mode https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
+// Activation du mode strict https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
 'use strict';
 
+let presentProducts = [];
+let display = 12;
+let pageNumber = 1;
+let brandFilter = 'No';
+let priceFilter = 'No';
+let daysFilter = 'No';
+let sortOrder = 'Cheapest';
+let favoriteItems = [];
+const currentDate = Date.now();
 
-let currentProducts = [];
-let show = 12;
-let page = 1;
-let brand = 'No';
-let price = 'No';
-let days = 'No';
-let sort = 'Cheapest';
-let favorite_products = [];
-const current_date = Date.now();
+// Selecteurs
+const selectDisplay = document.querySelector('#show-select');
+const selectPageNumber = document.querySelector('#page-select');
+const selectBrandFilter = document.querySelector('#brand-select');
+const selectPriceFilter = document.querySelector('#price-select');
+const selectDaysFilter = document.querySelector('#days-select');
+const selectSortOrder = document.querySelector('#sort-select');
+const spanTotalProducts = document.querySelector('#nbProducts');
+const spanTotalBrands = document.querySelector('#nbBrands');
+const spanTotalRecentProducts = document.querySelector('#nbRecentProducts');
+const spanQuantile50 = document.querySelector('#percentile50');
+const spanQuantile90 = document.querySelector('#percentile90');
+const spanQuantile95 = document.querySelector('#percentile95');
+const spanLatestReleasedDate = document.querySelector('#lastReleasedDate');
+const spanTotalSearchProducts = document.querySelector('#nbSearchProducts');
+const sectionSearchedProducts = document.querySelector('#searchProducts');
+const spanTotalFavoriteProducts = document.querySelector('#nbFavoriteProducts');
+const sectionFavProducts = document.querySelector('#favoriteProducts');
 
-// Selectors
+// Appel API
 
-
-const selectShow = document.querySelector('#show-select');
-const selectPage = document.querySelector('#page-select');
-const selectBrand = document.querySelector('#brand-select');
-const selectPrice = document.querySelector('#price-select');
-const selectDays = document.querySelector('#days-select');
-const selectSort = document.querySelector('#sort-select');
-const spanNbProducts = document.querySelector('#nbProducts');
-const spanNbBrands = document.querySelector('#nbBrands');
-const spanNbRecentProducts = document.querySelector('#nbRecentProducts');
-const spanPercentile50 = document.querySelector('#percentile50');
-const spanPercentile90 = document.querySelector('#percentile90');
-const spanPercentile95 = document.querySelector('#percentile95');
-const spanLastReleasedDate = document.querySelector('#lastReleasedDate');
-const spanNbSearchProducts = document.querySelector('#nbSearchProducts');
-const sectionSearchProducts = document.querySelector('#searchProducts');
-const spanNbFavoriteProducts = document.querySelector('#nbFavoriteProducts');
-const sectionFavoriteProducts = document.querySelector('#favoriteProducts');
-
-
-// Fetch API
-
-
-const fetchProducts = async (show, page, brand, price, days, sort) => {
+const retrieveProducts = async (display, pageNumber, brandFilter, priceFilter, daysFilter, sortOrder) => {
   try {
-    let url = `https://clear-fashion-delta-vert.vercel.app/products/search?show=${show}&page=${page}`;
-    if (brand && brand != 'No') {
-      url += `&brand=${brand}`;
+    let url = `https://clear-fashion-delta-vert.vercel.app/products/search?show=${display}&page=${pageNumber}`;
+    if (brandFilter && brandFilter != 'No') {
+      url += `&brand=${brandFilter}`;
     }
-    if (price && price != 'No') {
-      url += `&price=${price}`;
+    if (priceFilter && priceFilter != 'No') {
+      url += `&price=${priceFilter}`;
     }
-    if (days && days != 'No') {
-      url += `&days=${days}`;
+    if (daysFilter && daysFilter != 'No') {
+      url += `&days=${daysFilter}`;
     }
-    if (sort) {
-      url += `&sort=${sort}`;
+    if (sortOrder) {
+      url += `&sort=${sortOrder}`;
     }
 
     const response = await fetch(url);
@@ -60,21 +55,21 @@ const fetchProducts = async (show, page, brand, price, days, sort) => {
 
     const currentPage = body.currentPage;
     const totalPages = body.totalPages;
-    spanNbSearchProducts.innerHTML = body.totalCount + ' products found';
+    spanTotalSearchProducts.innerHTML = body.totalCount + ' produits trouvés';
     const options = Array.from(
       {'length': totalPages},
       (value, index) => `<option value="${index + 1}">${index + 1}</option>`
     ).join('');
-    selectPage.innerHTML = options;
-    selectPage.selectedIndex = currentPage - 1;
+    selectPageNumber.innerHTML = options;
+    selectPageNumber.selectedIndex = currentPage - 1;
     return body.data;
   } catch (error) {
     console.error(error);
-    return currentProducts;
+    return presentProducts;
   }
 };
 
-const fetchAllProducts = async () => {
+const retrieveAllProducts = async () => {
   try {
     const response = await fetch(
       `https://clear-fashion-delta-vert.vercel.app/products`
@@ -83,11 +78,11 @@ const fetchAllProducts = async () => {
     return body;
   } catch (error) {
     console.error(error);
-    return currentProducts;
+    return presentProducts;
   }
 };
 
-const fetchBrands = async () => {
+const retrieveBrands = async () => {
   try {
     const response = await fetch(
       `https://clear-fashion-delta-vert.vercel.app/brands`
@@ -96,170 +91,145 @@ const fetchBrands = async () => {
     return body;
   } catch (error) {
     console.error(error);
-    return currentProducts;
+    return presentProducts;
   }
 };
 
 
-// Favorite
+// Favoris
 
-
-async function changeFavorite(id) {
-  if (favorite_products.find(element => element._id === id)) {
-    favorite_products = favorite_products.filter(item => item._id !== id);
+async function modifyFavorite(id) {
+  if (favoriteItems.find(element => element._id === id)) {
+    favoriteItems = favoriteItems.filter(item => item._id !== id);
   }
   else {
-    favorite_products.push(currentProducts.find(element => element._id === id));
+    favoriteItems.push(presentProducts.find(element => element._id === id));
   }
-  document.getElementById(id).getElementsByTagName('button')[0].innerText = textFavorite(id);
-  renderFavoriteProducts();
+  document.getElementById(id).getElementsByTagName('button')[0].innerText = favoriteText(id);
+  displayFavoriteProducts();
 }
 
-function textFavorite(id) {
+function favoriteText(id) {
   let text = "";
-  if (favorite_products.find(element => element._id === id)) {
-    text = "Remove favorite";
+  if (favoriteItems.find(element => element._id === id)) {
+  text = "Retirer des favoris";
   }
   else {
-    text = "Add favorite";
+  text = "Ajouter aux favoris";
   }
   return text;
 }
-
-
-// Render
-
-
-const renderSearchProducts = products => {
-  currentProducts = products;
-  const template = products
-    .map(product => {
-      return `
-      <div class="product" id=${product._id}>
-        <img class="productPhoto" src="${product.photo}">
-        <span>${product.brand}</span>
-        <a href="${product.url}" target="_blank">${product.name}</a>
-        <span>${product.price}€</span>
-        <span>${new Date(product.date).toLocaleDateString()}</span>
-        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
-      </div>
-    `;
-    })
-    .join('');
-
-  sectionSearchProducts.innerHTML = template;
-};
-
-const renderFavoriteProducts = products => {
-  const template = favorite_products
-    .map(product => {
-      return `
-      <div class="product" id=${product._id}>
-        <img class="productPhoto" src="${product.photo}">
-        <span>${product.brand}</span>
-        <a href="${product.url}" target="_blank">${product.name}</a>
-        <span>${product.price}€</span>
-        <span>${new Date(product.date).toLocaleDateString()}</span>
-        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
-      </div>
-    `;
-    })
-    .join('');
   
-  spanNbFavoriteProducts.innerHTML = favorite_products.length + (favorite_products.length > 1 ? ' favorite products' : ' favorite product');
-  sectionFavoriteProducts.innerHTML = template;
-};
+  // Affichage
+  
+  const displaySearchedProducts = products => {
+  presentProducts = products;
+  const template = products
+  .map(product => {
+  return '<div class="product" id=${product._id}> <img class="productPhoto" src="${product.photo}"> <span>${product.brand}</span> <a href="${product.url}" target="_blank">${product.name}</a> <span>${product.price}€</span> <span>${new Date(product.date).toLocaleDateString()}</span> <button onclick="modifyFavorite('${product._id}')">${favoriteText(product._id)}</button> </div> ';
+  })
+  .join('');
+  
+  sectionSearchedProducts.innerHTML = template;
+  };
+  
+  const displayFavoriteProducts = products => {
+  const template = favoriteItems
+  .map(product => {
+  return '<div class="product" id=${product._id}> <img class="productPhoto" src="${product.photo}"> <span>${product.brand}</span> <a href="${product.url}" target="_blank">${product.name}</a> <span>${product.price}€</span> <span>${new Date(product.date).toLocaleDateString()}</span> <button onclick="modifyFavorite('${product._id}')">${favoriteText(product._id)}</button> </div> '';
+  })
+  .join('');
+  
+  spanTotalFavoriteProducts.innerHTML = favoriteItems.length + (favoriteItems.length > 1 ? ' produits favoris' : ' produit favori');
+  sectionFavProducts.innerHTML = template;
+  };
+  
+  // Ecouteurs d'événements
+  
+  selectDisplay.addEventListener('change', async (event) => {
+  display = event.target.value;
+  pageNumber = 1;
+  let products = await retrieveProducts(display=display, pageNumber=pageNumber, brandFilter=brandFilter, priceFilter=priceFilter, daysFilter=daysFilter, sortOrder=sortOrder)
+  displaySearchedProducts(products);
+  });
+  
+  selectPageNumber.addEventListener('change', async (event) => {
+  pageNumber = event.target.value;
+  let products = await retrieveProducts(display=display, pageNumber=pageNumber, brandFilter=brandFilter, priceFilter=priceFilter, daysFilter=daysFilter, sortOrder=sortOrder)
+  displaySearchedProducts(products);
+  });
+  
+  selectBrandFilter.addEventListener('change', async (event) => {
+  brandFilter = event.target.value;
+  pageNumber = 1;
+  let products = await retrieveProducts(display=display, pageNumber=pageNumber, brandFilter=brandFilter, priceFilter=priceFilter, daysFilter=daysFilter, sortOrder=sortOrder)
+  displaySearchedProducts(products);
+  });
+  
+  selectPriceFilter.addEventListener('change', async (event) => {
+  priceFilter = event.target.value;
+  pageNumber = 1;
+  let products = await retrieveProducts(display=display, pageNumber=pageNumber, brandFilter=brandFilter, priceFilter=priceFilter, daysFilter=daysFilter, sortOrder=sortOrder)
+  displaySearchedProducts(products);
+  });
 
-
-// Listeners
-
-
-selectShow.addEventListener('change', async (event) => {
-  show = event.target.value;
-  page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+  selectDaysFilter.addEventListener('change', async (event) => {
+    daysFilter = event.target.value;
+    pageNumber = 1;
+    let products = await retrieveProducts(display=display, pageNumber=pageNumber, brandFilter=brandFilter, priceFilter=priceFilter, daysFilter=daysFilter, sortOrder=sortOrder)
+    displaySearchedProducts(products);
 });
 
-selectPage.addEventListener('change', async (event) => {
-  page = event.target.value;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
-});
-
-selectBrand.addEventListener('change', async (event) => {
-  brand = event.target.value;
-  page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
-});
-
-selectPrice.addEventListener('change', async (event) => {
-  price = event.target.value;
-  page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
-});
-
-selectDays.addEventListener('change', async (event) => {
-  days = event.target.value;
-  page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
-});
-
-selectSort.addEventListener('change', async (event) => {
-  sort = event.target.value;
-  page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
-});
-
-
-// Main
-
-
-const quantile = (arr, q) => {
+selectSortOrder.addEventListener('change', async (event) => {
+  sortOrder = event.target.value;
+  pageNumber = 1;
+  let products = await retrieveProducts(display=display, pageNumber=pageNumber, brandFilter=brandFilter, priceFilter=priceFilter, daysFilter=daysFilter, sortOrder=sortOrder)
+  displaySearchedProducts(products);
+  });
+  
+  // Fonction principale
+  
+  const quantile = (arr, q) => {
   const sorted = arr.sort((a, b) => a - b);
   const pos = (sorted.length - 1) * q;
   const base = Math.floor(pos);
   const rest = pos - base;
   if (sorted[base + 1] !== undefined) {
-      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
   } else {
-      return sorted[base];
+  return sorted[base];
   }
-};
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const brand_names = await fetchBrands();
-  spanNbBrands.innerHTML = brand_names.length;
+  };
   
-  brand_names.unshift("No");
+  document.addEventListener('DOMContentLoaded', async () => {
+  const brandNames = await getBrands();
+  spanTotalBrands.innerHTML = brandNames.length;
+  
+  brandNames.unshift("Aucun");
   const brands = Array.from(
-    brand_names,
-    value => `<option value="${value}">${value}</option>`
+  brandNames,
+  value => <option value="${value}">${value}</option>
   ).join('');
   
-  selectBrand.innerHTML = brands;
+  selectBrandFilter.innerHTML = brands;
   
-  let products = await fetchProducts();
-  renderSearchProducts(products);
-
-  const all_products = await fetchAllProducts();
-  spanNbProducts.innerHTML = all_products.length;
-  spanNbRecentProducts.innerHTML = all_products.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 14).length;
+  let products = await retrieveProducts();
+  displaySearchedProducts(products);
+  
+  const allProducts = await getAllProducts();
+  spanTotalProducts.innerHTML = allProducts.length;
+  spanTotalRecentProducts.innerHTML = allProducts.filter(product => (currentDate - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 14).length;
   
   let prices = [];
-  let lastReleasedDate= new Date(all_products[0].date);
-  for (let product_id in all_products) {
-    prices.push(all_products[product_id].price);
-    if (new Date(all_products[product_id].date) > lastReleasedDate) {
-      lastReleasedDate = new Date(all_products[product_id].date);
-    }
+  let mostRecentReleaseDate = new Date(allProducts[0].date);
+  for (let productId in allProducts) {
+  prices.push(allProducts[productId].price);
+  if (new Date(allProducts[productId].date) > mostRecentReleaseDate) {
+  mostRecentReleaseDate = new Date(allProducts[productId].date);
+  }
   }
   spanPercentile50.innerHTML = Math.round(quantile(prices, 0.50));
   spanPercentile90.innerHTML = Math.round(quantile(prices, 0.90));
   spanPercentile95.innerHTML = Math.round(quantile(prices, 0.95));
-  spanLastReleasedDate.innerHTML = lastReleasedDate.toLocaleDateString();
-});
+  spanMostRecentReleaseDate.innerHTML = mostRecentReleaseDate.toLocaleDateString();
+  });

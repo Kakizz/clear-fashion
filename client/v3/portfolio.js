@@ -1,7 +1,7 @@
 // Invoking strict mode https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
 'use strict';
 
-// current products on the page
+
 let currentProducts = [];
 let show = 12;
 let page = 1;
@@ -12,7 +12,7 @@ let sort = 'Cheapest';
 let favorite_products = [];
 const current_date = Date.now();
 
-// instantiate the selectors
+// Selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
@@ -31,12 +31,9 @@ const sectionSearchProducts = document.querySelector('#searchProducts');
 const spanNbFavoriteProducts = document.querySelector('#nbFavoriteProducts');
 const sectionFavoriteProducts = document.querySelector('#favoriteProducts');
 
-/**
- * Fetch API
- */
 
-//`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
-//`https://clear-fashion-delta-vert.vercel.app/products/search`
+// Fetch
+
 
 const fetchProducts = async (display, pageNum, make, cost, duration, orderBy) => {
   try {
@@ -72,195 +69,195 @@ const fetchProducts = async (display, pageNum, make, cost, duration, orderBy) =>
   } catch (err) {
     console.error(err);
     return currentProducts;
-    }
-  };
+  }
+};
 
 const fetchAllProducts = async () => {
   try {
-    const response = await fetch(
-      `https://clear-fashion-delta-vert.vercel.app/products`
+    const res = await fetch(
+    'https://clear-fashion-delta-vert.vercel.app/products'
     );
-    const body = await response.json();
-    return body;
-  } catch (error) {
-    console.error(error);
+    const content = await res.json();
+    return content;
+  } catch (err) {
+    console.error(err);
     return currentProducts;
   }
 };
 
 const fetchBrands = async () => {
   try {
-    const response = await fetch(
+    const res = await fetch(
       `https://clear-fashion-delta-vert.vercel.app/brands`
     );
-    const body = await response.json();
-    return body;
-  } catch (error) {
-    console.error(error);
+    const content = await res.json();
+    return content;
+  } catch (err) {
+    console.error(err);
     return currentProducts;
   }
 };
 
-/**
- * Favorite products
- */
 
-async function changeFavorite(id) {
-  if (favorite_products.find(element => element._id === id)) {
-    favorite_products = favorite_products.filter(item => item._id !== id);
+// Favoris
+
+
+async function changeFavorite(productId) {
+  if (favorite_products.find(element => element._id === productId)) {
+    favorite_products = favorite_products.filter(item => item._id !== productId);
   }
   else {
-    favorite_products.push(currentProducts.find(element => element._id === id));
+    favorite_products.push(currentProducts.find(element => element._id === productId));
   }
-  document.getElementById(id).getElementsByTagName('button')[0].innerText = textFavorite(id);
+  document.getElementById(productId).getElementsByTagName('button')[0].innerText = textFavorite(productId);
   renderFavoriteProducts();
 }
 
-function textFavorite(id) {
-  let text = "";
-  if (favorite_products.find(element => element._id === id)) {
-    text = "Remove favorite";
+function textFavorite(productId) {
+  let favText = "";
+  if (favorite_products.find(element => element._id === productId)) {
+    favText = "Remove favorite";
   }
   else {
-    text = "Add favorite";
+    favText = "Add favorite";
   }
-  return text;
+  return favText;
 }
 
-/**
- * Render list of products
- */
 
-const renderSearchProducts = products => {
-  currentProducts = products;
-  const template = products
-    .map(product => {
+//Render
+
+
+const renderSearchProducts = items => {
+  currentProducts = items;
+  const tmpl = items
+    .map(item => {
       return `
-      <div class="product" id=${product._id}>
-        <img class="productPhoto" src="${product.photo}">
-        <span>${product.brand}</span>
-        <a href="${product.url}" target="_blank">${product.name}</a>
-        <span>${product.price}€</span>
-        <span>${new Date(product.date).toLocaleDateString()}</span>
-        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
+      <div class="product" id=${item._id}>
+        <img class="productPhoto" src="${item.photo}">
+        <span>${item.brand}</span>
+        <a href="${item.url}" target="_blank">${item.name}</a>
+        <span>${item.price}€</span>
+        <span>${new Date(item.date).toLocaleDateString()}</span>
+        <button onclick="changeFavorite('${item._id}')">${textFavorite(item._id)}</button>
       </div>
     `;
     })
     .join('');
 
-  sectionSearchProducts.innerHTML = template;
+  sectionSearchProducts.innerHTML = tmpl;
 };
 
-const renderFavoriteProducts = products => {
-  const template = favorite_products
-    .map(product => {
+const renderFavoriteProducts = items => {
+  const tmpl = favorite_products
+    .map(item => {
       return `
-      <div class="product" id=${product._id}>
-        <img class="productPhoto" src="${product.photo}">
-        <span>${product.brand}</span>
-        <a href="${product.url}" target="_blank">${product.name}</a>
-        <span>${product.price}€</span>
-        <span>${new Date(product.date).toLocaleDateString()}</span>
-        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
+      <div class="product" id=${item._id}>
+        <img class="productPhoto" src="${item.photo}">
+        <span>${item.brand}</span>
+        <a href="${item.url}" target="_blank">${item.name}</a>
+        <span>${item.price}€</span>
+        <span>${new Date(item.date).toLocaleDateString()}</span>
+        <button onclick="changeFavorite('${item._id}')">${textFavorite(item._id)}</button>
       </div>
     `;
     })
     .join('');
   
   spanNbFavoriteProducts.innerHTML = favorite_products.length + (favorite_products.length > 1 ? ' favorite products' : ' favorite product');
-  sectionFavoriteProducts.innerHTML = template;
+  sectionFavoriteProducts.innerHTML = tmpl;
 };
 
-/**
- * Declaration of all Listeners
- */
 
-selectShow.addEventListener('change', async (event) => {
-  show = event.target.value;
+// Listeners
+
+
+selectShow.addEventListener('change', async (evt) => {
+  show = evt.target.value;
   page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(items);
 });
 
-selectPage.addEventListener('change', async (event) => {
-  page = event.target.value;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+selectPage.addEventListener('change', async (evt) => {
+  page = evt.target.value;
+  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(items);
 });
 
-selectBrand.addEventListener('change', async (event) => {
-  brand = event.target.value;
+selectBrand.addEventListener('change', async (evt) => {
+  brand = evt.target.value;
   page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(items);
 });
 
-selectPrice.addEventListener('change', async (event) => {
-  price = event.target.value;
+selectPrice.addEventListener('change', async (evt) => {
+  price = evt.target.value;
   page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(items);
 });
 
-selectDays.addEventListener('change', async (event) => {
-  days = event.target.value;
+selectDays.addEventListener('change', async (evt) => {
+  days = evt.target.value;
   page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(items);
 });
 
-selectSort.addEventListener('change', async (event) => {
-  sort = event.target.value;
+selectSort.addEventListener('change', async (evt) => {
+  sort = evt.target.value;
   page = 1;
-  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(products);
+  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(items);
 });
 
-/**
- * Launched on page load
- */
 
-const quantile = (arr, q) => {
-  const sorted = arr.sort((a, b) => a - b);
-  const pos = (sorted.length - 1) * q;
-  const base = Math.floor(pos);
-  const rest = pos - base;
-  if (sorted[base + 1] !== undefined) {
-      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+// Main
+
+
+const quantile = (array, q) => {
+  const sortedArr = array.sort((a, b) => a - b);
+  const position = (sortedArr.length - 1) * q;
+  const baseIndex = Math.floor(position);
+  const remainder = position - baseIndex;
+  if (sortedArr[baseIndex + 1] !== undefined) {
+      return sortedArr[baseIndex] + remainder * (sortedArr[baseIndex + 1] - sortedArr[baseIndex]);
   } else {
-      return sorted[base];
+      return sortedArr[baseIndex];
   }
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const brand_names = await fetchBrands();
-  spanNbBrands.innerHTML = brand_names.length;
+  const brandList = await fetchBrands();
+  spanNbBrands.innerHTML = brandList.length;
   
-  brand_names.unshift("No");
+  brandList.unshift("No");
   const brands = Array.from(
-    brand_names,
+    brandList,
     value => `<option value="${value}">${value}</option>`
   ).join('');
   
   selectBrand.innerHTML = brands;
   
-  let products = await fetchProducts();
-  renderSearchProducts(products);
+  let items = await fetchProducts();
+  renderSearchProducts(items);
 
-  const all_products = await fetchAllProducts();
-  spanNbProducts.innerHTML = all_products.length;
-  spanNbRecentProducts.innerHTML = all_products.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 14).length;
+  const allItems = await fetchAllProducts();
+  spanNbProducts.innerHTML = allItems.length;
+  spanNbRecentProducts.innerHTML = allItems.filter(item => (current_date - new Date(item.date)) / (1000 * 60 * 60 * 24) <= 14).length;
   
-  let prices = [];
-  let lastReleasedDate= new Date(all_products[0].date);
-  for (let product_id in all_products) {
-    prices.push(all_products[product_id].price);
-    if (new Date(all_products[product_id].date) > lastReleasedDate) {
-      lastReleasedDate = new Date(all_products[product_id].date);
+  let itemPrices = [];
+  let latestReleaseDate= new Date(allItems[0].date);
+  for (let itemId in allItems) {
+    itemPrices.push(allItems[itemId].price);
+    if (new Date(allItems[itemId].date) > latestReleaseDate) {
+      latestReleaseDate = new Date(allItems[itemId].date);
     }
   }
-  spanPercentile50.innerHTML = Math.round(quantile(prices, 0.50));
-  spanPercentile90.innerHTML = Math.round(quantile(prices, 0.90));
-  spanPercentile95.innerHTML = Math.round(quantile(prices, 0.95));
-  spanLastReleasedDate.innerHTML = lastReleasedDate.toLocaleDateString();
+  spanPercentile50.innerHTML = Math.round(quantile(itemPrices, 0.50));
+  spanPercentile90.innerHTML = Math.round(quantile(itemPrices, 0.90));
+  spanPercentile95.innerHTML = Math.round(quantile(itemPrices, 0.95));
+  spanLastReleasedDate.innerHTML = latestReleaseDate.toLocaleDateString();
 });

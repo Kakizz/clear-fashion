@@ -54,8 +54,6 @@ const fetchProducts = async (display, pageNum, make, cost, duration, orderBy) =>
     const res = await fetch(endpoint);
     const content = await res.json();
     
-    console.log("ylg", content)
-    
     const presentPage = content.currentPage;
     const totalPageNum = content.totalPages;
     spanNbSearchProducts.innerHTML = content.totalCount + ' products found';

@@ -8,7 +8,7 @@ let page = 1;
 let brand = 'No';
 let price = 'No';
 let days = 'No';
-let sort = 'Cheapest';
+let sort = 'Asc price';
 let favorite_products = [];
 const current_date = Date.now();
 

@@ -1,7 +1,7 @@
 // Invoking strict mode https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode#invoking_strict_mode
 'use strict';
 
-
+// current products on the page
 let currentProducts = [];
 let show = 12;
 let page = 1;
@@ -12,7 +12,7 @@ let sort = 'Cheapest';
 let favorite_products = [];
 const current_date = Date.now();
 
-// Selectors
+// instantiate the selectors
 const selectShow = document.querySelector('#show-select');
 const selectPage = document.querySelector('#page-select');
 const selectBrand = document.querySelector('#brand-select');
@@ -31,231 +31,236 @@ const sectionSearchProducts = document.querySelector('#searchProducts');
 const spanNbFavoriteProducts = document.querySelector('#nbFavoriteProducts');
 const sectionFavoriteProducts = document.querySelector('#favoriteProducts');
 
+/**
+ * Fetch API
+ */
 
-// Fetch
+//`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
+//`https://clear-fashion-delta-vert.vercel.app/products/search`
 
-
-const fetchProducts = async (display, pageNum, make, cost, duration, orderBy) => {
+const fetchProducts = async (show, page, brand, price, days, sort) => {
   try {
-    let endpoint = 'https://clear-fashion-delta-vert.vercel.app/products/search?show=${display}&page=${pageNum}';
-    if (make && make != 'No') {
-    endpoint += '&brand=${make}';
+    let url = `https://clear-fashion-delta-vert.vercel.app/products/search?show=${show}&page=${page}`;
+    if (brand && brand != 'No') {
+      url += `&brand=${brand}`;
     }
-    if (cost && cost != 'No') {
-    endpoint += '&price=${cost}';
+    if (price && price != 'No') {
+      url += `&price=${price}`;
     }
-    if (duration && duration != 'No') {
-    endpoint += '&days=${duration}';
+    if (days && days != 'No') {
+      url += `&days=${days}`;
     }
-    if (orderBy) {
-    endpoint += '&sort=${orderBy}';
+    if (sort) {
+      url += `&sort=${sort}`;
     }
 
-    const res = await fetch(endpoint);
-    const content = await res.json();
-    
-    const presentPage = content.currentPage;
-    const totalPageNum = content.totalPages;
-    spanNbSearchProducts.innerHTML = content.totalCount + ' products found';
-    const choices = Array.from(
-      {'length': totalPageNum},
-      (val, idx) => `<option value="${idx + 1}">${idx + 1}</option>`
+    const response = await fetch(url);
+    const body = await response.json();
+
+    console.log("ylg", body)
+
+    const currentPage = body.currentPage;
+    const totalPages = body.totalPages;
+    spanNbSearchProducts.innerHTML = body.totalCount + ' products found';
+    const options = Array.from(
+      {'length': totalPages},
+      (value, index) => `<option value="${index + 1}">${index + 1}</option>`
     ).join('');
-    selectPage.innerHTML = choices;
-    selectPage.selectedIndex = presentPage - 1;
-    return content.data;
-  } catch (err) {
-    console.error(err);
+    selectPage.innerHTML = options;
+    selectPage.selectedIndex = currentPage - 1;
+    return body.data;
+  } catch (error) {
+    console.error(error);
     return currentProducts;
   }
 };
 
 const fetchAllProducts = async () => {
   try {
-    const res = await fetch(
-    'https://clear-fashion-delta-vert.vercel.app/products'
+    const response = await fetch(
+      `https://clear-fashion-delta-vert.vercel.app/products`
     );
-    const content = await res.json();
-    return content;
-  } catch (err) {
-    console.error(err);
+    const body = await response.json();
+    return body;
+  } catch (error) {
+    console.error(error);
     return currentProducts;
   }
 };
 
 const fetchBrands = async () => {
   try {
-    const res = await fetch(
+    const response = await fetch(
       `https://clear-fashion-delta-vert.vercel.app/brands`
     );
-    const content = await res.json();
-    return content;
-  } catch (err) {
-    console.error(err);
+    const body = await response.json();
+    return body;
+  } catch (error) {
+    console.error(error);
     return currentProducts;
   }
 };
 
+/**
+ * Favorite products
+ */
 
-// Favoris
-
-
-async function changeFavorite(productId) {
-  if (favorite_products.find(element => element._id === productId)) {
-    favorite_products = favorite_products.filter(item => item._id !== productId);
+async function changeFavorite(id) {
+  if (favorite_products.find(element => element._id === id)) {
+    favorite_products = favorite_products.filter(item => item._id !== id);
   }
   else {
-    favorite_products.push(currentProducts.find(element => element._id === productId));
+    favorite_products.push(currentProducts.find(element => element._id === id));
   }
-  document.getElementById(productId).getElementsByTagName('button')[0].innerText = textFavorite(productId);
+  document.getElementById(id).getElementsByTagName('button')[0].innerText = textFavorite(id);
   renderFavoriteProducts();
 }
 
-function textFavorite(productId) {
-  let favText = "";
-  if (favorite_products.find(element => element._id === productId)) {
-    favText = "Remove favorite";
+function textFavorite(id) {
+  let text = "";
+  if (favorite_products.find(element => element._id === id)) {
+    text = "Remove favorite";
   }
   else {
-    favText = "Add favorite";
+    text = "Add favorite";
   }
-  return favText;
+  return text;
 }
 
+/**
+ * Render list of products
+ */
 
-//Render
-
-
-const renderSearchProducts = items => {
-  currentProducts = items;
-  const tmpl = items
-    .map(item => {
+const renderSearchProducts = products => {
+  currentProducts = products;
+  const template = products
+    .map(product => {
       return `
-      <div class="product" id=${item._id}>
-        <img class="productPhoto" src="${item.photo}">
-        <span>${item.brand}</span>
-        <a href="${item.url}" target="_blank">${item.name}</a>
-        <span>${item.price}€</span>
-        <span>${new Date(item.date).toLocaleDateString()}</span>
-        <button onclick="changeFavorite('${item._id}')">${textFavorite(item._id)}</button>
+      <div class="product" id=${product._id}>
+        <img class="productPhoto" src="${product.photo}">
+        <span>${product.brand}</span>
+        <a href="${product.url}" target="_blank">${product.name}</a>
+        <span>${product.price}€</span>
+        <span>${new Date(product.date).toLocaleDateString()}</span>
+        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
       </div>
     `;
     })
     .join('');
 
-  sectionSearchProducts.innerHTML = tmpl;
+  sectionSearchProducts.innerHTML = template;
 };
 
-const renderFavoriteProducts = items => {
-  const tmpl = favorite_products
-    .map(item => {
+const renderFavoriteProducts = products => {
+  const template = favorite_products
+    .map(product => {
       return `
-      <div class="product" id=${item._id}>
-        <img class="productPhoto" src="${item.photo}">
-        <span>${item.brand}</span>
-        <a href="${item.url}" target="_blank">${item.name}</a>
-        <span>${item.price}€</span>
-        <span>${new Date(item.date).toLocaleDateString()}</span>
-        <button onclick="changeFavorite('${item._id}')">${textFavorite(item._id)}</button>
+      <div class="product" id=${product._id}>
+        <img class="productPhoto" src="${product.photo}">
+        <span>${product.brand}</span>
+        <a href="${product.url}" target="_blank">${product.name}</a>
+        <span>${product.price}€</span>
+        <span>${new Date(product.date).toLocaleDateString()}</span>
+        <button onclick="changeFavorite('${product._id}')">${textFavorite(product._id)}</button>
       </div>
     `;
     })
     .join('');
   
   spanNbFavoriteProducts.innerHTML = favorite_products.length + (favorite_products.length > 1 ? ' favorite products' : ' favorite product');
-  sectionFavoriteProducts.innerHTML = tmpl;
+  sectionFavoriteProducts.innerHTML = template;
 };
 
+/**
+ * Declaration of all Listeners
+ */
 
-// Listeners
-
-
-selectShow.addEventListener('change', async (evt) => {
-  show = evt.target.value;
+selectShow.addEventListener('change', async (event) => {
+  show = event.target.value;
   page = 1;
-  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(items);
+  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(products);
 });
 
-selectPage.addEventListener('change', async (evt) => {
-  page = evt.target.value;
-  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(items);
+selectPage.addEventListener('change', async (event) => {
+  page = event.target.value;
+  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(products);
 });
 
-selectBrand.addEventListener('change', async (evt) => {
-  brand = evt.target.value;
+selectBrand.addEventListener('change', async (event) => {
+  brand = event.target.value;
   page = 1;
-  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(items);
+  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(products);
 });
 
-selectPrice.addEventListener('change', async (evt) => {
-  price = evt.target.value;
+selectPrice.addEventListener('change', async (event) => {
+  price = event.target.value;
   page = 1;
-  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(items);
+  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(products);
 });
 
-selectDays.addEventListener('change', async (evt) => {
-  days = evt.target.value;
+selectDays.addEventListener('change', async (event) => {
+  days = event.target.value;
   page = 1;
-  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(items);
+  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(products);
 });
 
-selectSort.addEventListener('change', async (evt) => {
-  sort = evt.target.value;
+selectSort.addEventListener('change', async (event) => {
+  sort = event.target.value;
   page = 1;
-  let items = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
-  renderSearchProducts(items);
+  let products = await fetchProducts(show=show, page=page, brand=brand, price=price, days=days, sort=sort)
+  renderSearchProducts(products);
 });
 
+/**
+ * Launched on page load
+ */
 
-// Main
-
-
-const quantile = (array, q) => {
-  const sortedArr = array.sort((a, b) => a - b);
-  const position = (sortedArr.length - 1) * q;
-  const baseIndex = Math.floor(position);
-  const remainder = position - baseIndex;
-  if (sortedArr[baseIndex + 1] !== undefined) {
-      return sortedArr[baseIndex] + remainder * (sortedArr[baseIndex + 1] - sortedArr[baseIndex]);
+const quantile = (arr, q) => {
+  const sorted = arr.sort((a, b) => a - b);
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  if (sorted[base + 1] !== undefined) {
+      return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
   } else {
-      return sortedArr[baseIndex];
+      return sorted[base];
   }
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const brandList = await fetchBrands();
-  spanNbBrands.innerHTML = brandList.length;
+  const brand_names = await fetchBrands();
+  spanNbBrands.innerHTML = brand_names.length;
   
-  brandList.unshift("No");
+  brand_names.unshift("No");
   const brands = Array.from(
-    brandList,
+    brand_names,
     value => `<option value="${value}">${value}</option>`
   ).join('');
   
   selectBrand.innerHTML = brands;
   
-  let items = await fetchProducts();
-  renderSearchProducts(items);
+  let products = await fetchProducts();
+  renderSearchProducts(products);
 
-  const allItems = await fetchAllProducts();
-  spanNbProducts.innerHTML = allItems.length;
-  spanNbRecentProducts.innerHTML = allItems.filter(item => (current_date - new Date(item.date)) / (1000 * 60 * 60 * 24) <= 14).length;
+  const all_products = await fetchAllProducts();
+  spanNbProducts.innerHTML = all_products.length;
+  spanNbRecentProducts.innerHTML = all_products.filter(product => (current_date - new Date(product.date)) / (1000 * 60 * 60 * 24) <= 14).length;
   
-  let itemPrices = [];
-  let latestReleaseDate= new Date(allItems[0].date);
-  for (let itemId in allItems) {
-    itemPrices.push(allItems[itemId].price);
-    if (new Date(allItems[itemId].date) > latestReleaseDate) {
-      latestReleaseDate = new Date(allItems[itemId].date);
+  let prices = [];
+  let lastReleasedDate= new Date(all_products[0].date);
+  for (let product_id in all_products) {
+    prices.push(all_products[product_id].price);
+    if (new Date(all_products[product_id].date) > lastReleasedDate) {
+      lastReleasedDate = new Date(all_products[product_id].date);
     }
   }
-  spanPercentile50.innerHTML = Math.round(quantile(itemPrices, 0.50));
-  spanPercentile90.innerHTML = Math.round(quantile(itemPrices, 0.90));
-  spanPercentile95.innerHTML = Math.round(quantile(itemPrices, 0.95));
-  spanLastReleasedDate.innerHTML = latestReleaseDate.toLocaleDateString();
+  spanPercentile50.innerHTML = Math.round(quantile(prices, 0.50));
+  spanPercentile90.innerHTML = Math.round(quantile(prices, 0.90));
+  spanPercentile95.innerHTML = Math.round(quantile(prices, 0.95));
+  spanLastReleasedDate.innerHTML = lastReleasedDate.toLocaleDateString();
 });

@@ -12,6 +12,7 @@ let sort = 'Cheapest';
 let favorite_products = [];
 const current_date = Date.now();
 
+
 // Selectors
 
 

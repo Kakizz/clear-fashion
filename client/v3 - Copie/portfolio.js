@@ -38,42 +38,42 @@ const sectionFavoriteProducts = document.querySelector('#favoriteProducts');
 //`https://clear-fashion-api.vercel.app?page=${page}&size=${size}`
 //`https://clear-fashion-delta-vert.vercel.app/products/search`
 
-const fetchProducts = async (display, pageNum, make, cost, duration, orderBy) => {
+const fetchProducts = async (show, page, brand, price, days, sort) => {
   try {
-    let endpoint = 'https://clear-fashion-delta-vert.vercel.app/products/search?show=${display}&page=${pageNum}';
-    if (make && make != 'No') {
-    endpoint += '&brand=${make}';
+    let url = `https://clear-fashion-delta-vert.vercel.app/products/search?show=${show}&page=${page}`;
+    if (brand && brand != 'No') {
+      url += `&brand=${brand}`;
     }
-    if (cost && cost != 'No') {
-    endpoint += '&price=${cost}';
+    if (price && price != 'No') {
+      url += `&price=${price}`;
     }
-    if (duration && duration != 'No') {
-    endpoint += '&days=${duration}';
+    if (days && days != 'No') {
+      url += `&days=${days}`;
     }
-    if (orderBy) {
-    endpoint += '&sort=${orderBy}';
+    if (sort) {
+      url += `&sort=${sort}`;
     }
 
-    const res = await fetch(endpoint);
-    const content = await res.json();
-    
-    console.log("ylg", content)
-    
-    const presentPage = content.currentPage;
-    const totalPageNum = content.totalPages;
-    spanNbSearchProducts.innerHTML = content.totalCount + ' products found';
-    const choices = Array.from(
-      {'length': totalPageNum},
-      (val, idx) => `<option value="${idx + 1}">${idx + 1}</option>`
+    const response = await fetch(url);
+    const body = await response.json();
+
+    console.log("ylg", body)
+
+    const currentPage = body.currentPage;
+    const totalPages = body.totalPages;
+    spanNbSearchProducts.innerHTML = body.totalCount + ' products found';
+    const options = Array.from(
+      {'length': totalPages},
+      (value, index) => `<option value="${index + 1}">${index + 1}</option>`
     ).join('');
-    selectPage.innerHTML = choices;
-    selectPage.selectedIndex = presentPage - 1;
-    return content.data;
-  } catch (err) {
-    console.error(err);
+    selectPage.innerHTML = options;
+    selectPage.selectedIndex = currentPage - 1;
+    return body.data;
+  } catch (error) {
+    console.error(error);
     return currentProducts;
-    }
-  };
+  }
+};
 
 const fetchAllProducts = async () => {
   try {
